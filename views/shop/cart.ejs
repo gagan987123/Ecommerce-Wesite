@@ -14,10 +14,17 @@
                             <form action="/delete-cart-item" method="POST">
                                 <input type="hidden" value="<%= p.id %>" name="productid">
                                 <button class="btn danger" type="submit">Delete</button>
-                            </form>
+                            </form> 
                         </li>
                     <% }) %>
+
                 </ul>
+                <hr>
+                <div class="centered">
+                <form action="/create-order" method="POST">
+                    <button class="btn" type="submit">Order Now !</button>
+                </form>
+            </div>
             <% } else { %>
                 <h1>No Products in Cart!</h1>
             <% } %>

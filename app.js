@@ -7,6 +7,8 @@ const Product = require("./modles/products");
 const User = require("./modles/user");
 const Cart = require('./modles/cart');
 const CartItem = require('./modles/cart-item')
+const Order = require('./modles/order');
+const OrderItem = require('./modles/order-item');
 const app = express();
 
 app.set("view engine", "ejs");
@@ -45,7 +47,9 @@ User.hasOne(Cart);
 Cart.belongsTo(User);
 Cart.belongsToMany(Product,{through:CartItem});
 Product.belongsToMany(Cart,{through:CartItem});
-
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product,{through:OrderItem});
 
 
 

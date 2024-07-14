@@ -1,9 +1,50 @@
 <%- include('../includes/head.ejs') %>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .card h1 {
+            font-size: 1.5em;
+            margin: 0 0 10px;
+        }
+        .card ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .card ul li {
+            margin: 5px 0;
+        }
+    </style>
     </head>
 
     <body>
         <%- include('../includes/navigation.ejs') %>
         <main>
+            <% if(orders.length <= 0 ) { %>
             <h1>Nothing there!</h1>
+            <% } else { %>
+                <div class="orders">
+                    <% orders.forEach(order => { %>
+                        <div class="card">
+                            <h1># <%= order.id %></h1>
+                            <ul>
+                                <% order.products.forEach(product => { %>
+                                    <li><%= product.title %> (<%= product.orderItem.quantity %>)</li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
         </main>
         <%- include('../includes/end.ejs') %>
+    </body>
+</html>
