@@ -25,3 +25,7 @@
 .product__description {
     text-align: center;
 }
+.file{
+    display: flex;
+    justify-content: center;
+}

@@ -5,6 +5,35 @@ const { where } = require("sequelize");
 const { products } = require("../routes/admin");
 const CartItem = require("../modles/cart-item");
 const path = require("../util/path");
+const mysql = require('../util/database'); // Use mysql2 library for promises
+const XLSX = require('xlsx');
+
+exports.exel=async(req,res)=>{
+    try{
+        const [rows,fields]= await mysql.query("select * from orderitems");
+        const heading = [[ 'id ', 'quantity', ' createdAt' ,'updatedAt' ,'orderId' ,'productId']]
+        rows.forEach(row => {
+          row.createdAt = new Date(row.createdAt).toLocaleString();
+          row.updatedAt = new Date(row.updatedAt).toLocaleString();
+      });
+
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        XLSX.utils.sheet_add_aoa(worksheet, heading);
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'books');
+    
+        const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+    
+        res.attachment('orders-items.xlsx');
+        return res.send(buffer);
+        res.json({msg:'ok',data:rows});
+
+      }catch(err){
+      console.log(err);
+    }
+
+}
+
 
 exports.getproduct = (req, res, next) => {
   req.user
