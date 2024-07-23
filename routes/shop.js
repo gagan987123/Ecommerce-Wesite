@@ -15,6 +15,6 @@ router.post('/delete-cart-item',productcontroller.deletecartitem);
 router.get('/products/:productid',productcontroller.getprodetails);
 router.post('/create-order',productcontroller.postorder);
 router.get('/orders',productcontroller.getOrders);
-router.get('/api/v1/books/export-excel',productcontroller.exel);
+// router.get('/api/v1/books/export-excel',productcontroller.exel);
 
 module.exports = router;

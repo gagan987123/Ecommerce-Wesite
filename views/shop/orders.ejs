@@ -34,10 +34,10 @@
                 <div class="orders">
                     <% orders.forEach(order => { %>
                         <div class="card">
-                            <h1># <%= order.id %></h1>
+                            <h1># <%= order._id %></h1>
                             <ul>
-                                <% order.products.forEach(product => { %>
-                                    <li><%= product.title %> (<%= product.orderItem.quantity %>)</li>
+                                <% order.items.forEach(product => { %>
+                                    <li><%= product.productName%> (<%= product.quantity %>)</li>
                                 <% }); %>
                             </ul>
                         </div>

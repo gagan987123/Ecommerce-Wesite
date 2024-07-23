@@ -22,14 +22,13 @@
 //         this.imgURL = imgURL;
 //         this.description = description;
 //         this.price = price;
-    
 
 //     }
 //     // save(){
 //     //    getproductfromfile(products=>{
 //     //     if(this.id){
 //     //         const existingproductindex = products.findIndex(proid => proid.id === this.id);
-            
+
 //     //         const updatedproduct = [...products];
 //     //         updatedproduct[existingproductindex] = this;
 //     //         fs.writeFile(p,JSON.stringify(updatedproduct),(err)=>{
@@ -44,7 +43,6 @@
 //     //    })
 //     // }
 
-
 // //     static fatchAll(cb){
 // //         // return products;
 // //        getproductfromfile(cb);
@@ -55,7 +53,6 @@
 // //         const product = products.find(p=>p.id === id);
 // //         cb(product);
 // //     });
-
 
 // // }
 // // static delete(id){
@@ -69,9 +66,9 @@
 // //         fs.writeFile(p, JSON.stringify(productindex), (err) => {
 // //             if (!err ) {
 // //                 cart.deleteproduct(id, product.price);
-// //             } 
+// //             }
 // //         });
-    
+
 // //     })
 // // };
 // save(){
@@ -94,33 +91,104 @@
 
 // }
 
+// const Sequelize = require('sequelize');
+// const sequelize =require('../util/database');
 
+// const Products =   sequelize.define('products',{
+//     id:{
+//         type: Sequelize.INTEGER,
+//         autoIncrement:true,
+//         allowNull:false,
+//         primaryKey:true
 
-const Sequelize = require('sequelize');
-const sequelize =require('../util/database');
+//     },
+//     title:{
+//         type :Sequelize.STRING
+//     },
+//     price:{
+//         type:Sequelize.DOUBLE,
+//         allowNull:false
+//     },
+//     imageurl:{
+//         type:Sequelize.STRING,
+//         allowNull:false
+//     },
+//     description:{
+//         type:Sequelize.STRING,
+//         allowNull:false
+//     }
+// });
+// module.exports =Products;
 
-const Products =   sequelize.define('products',{
-    id:{
-        type: Sequelize.INTEGER,
-        autoIncrement:true,
-        allowNull:false,
-        primaryKey:true
+const getDb = require("../util/database").getDb;
+const mongodb = require("mongodb");
+class Product {
+  constructor(title, price, description, imageUrl, id,userId) {
+    this.title = title;
+    this.price = price;
+    this.description = description;
+    this.imageUrl = imageUrl;
+    this._id = id;
+    this.userId = userId;
+  }
 
-    },
-    title:{
-        type :Sequelize.STRING
-    },
-    price:{
-        type:Sequelize.DOUBLE,
-        allowNull:false
-    },
-    imageurl:{
-        type:Sequelize.STRING,
-        allowNull:false
-    },
-    description:{
-        type:Sequelize.STRING,
-        allowNull:false
+  save() {
+    const db = getDb();
+    let dbOp;
+    if (this._id) {
+      dbOp = db
+        .collection("products")
+        .updateOne({ _id: new mongodb.ObjectId(this._id) }, { $set: this });
+    } else {
+      dbOp = db.collection("products").insertOne(this);
     }
-});
-module.exports =Products;
+    return dbOp
+
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  static fetchAll() {
+    const db = getDb();
+
+    return db
+      .collection("products")
+      .find()
+      .toArray()
+      .then((products) => {
+        console.log(products);
+        return products;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  static findById(proid) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .find({ _id: new mongodb.ObjectId(proid) })
+      .next()
+      .then((product) => {
+        // console.log(product);
+        return product;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  static deleteById(proid) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .deleteOne({ _id: new mongodb.ObjectId(proid) });
+  }
+}
+
+module.exports = Product;
