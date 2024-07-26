@@ -1,13 +1,14 @@
-const product = require("../modles/products");
+// const product = require("../modles/products");
 const Product = require("../modles/products");
 const carts = require("../modles/cart");
-const { where } = require("sequelize");
+const Order = require("../modles/order");
+// const { where } = require("sequelize");
 const { products } = require("../routes/admin");
 const CartItem = require("../modles/cart-item");
 const path = require("../util/path");
 const mysql = require("../util/database"); // Use mysql2 library for promises
 const XLSX = require("xlsx");
-const { ObjectId } = require("mongodb");
+// const { ObjectId } = require("mongodb");
 
 exports.exel = async (req, res) => {
   try {
@@ -50,16 +51,17 @@ exports.getproduct = (req, res, next) => {
 
 exports.deleteproduct = (req, res, next) => {
   const productid = req.params.productid;
-
+console.log(productid);
   // product.delete(productid).then().catch(err=>{console.log(err)});
-  product.deleteById(productid)
-    
-    .then((result) => {
+  Product.findByIdAndDelete(productid)
+    .then(() => {
       console.log("destroyed product");
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
 };
+
+
 exports.geteditproduct = (req, res, next) => {
   const editmode = req.query.edit;
   if (!editmode) {
@@ -92,8 +94,19 @@ exports.posteditproduct = (req, res, next) => {
   const updatedImageurl = req.body.imageurl;
   const updateddesc = req.body.description;
   console.log(productid);
-  const product = new Product(updatedtitle,updatedprice,updateddesc,updatedImageurl , new ObjectId(productid));
-  product.save()
+  // const product = new Product({
+  //   title:updatedtitle,
+  //   price:updatedprice,
+  //   description:updateddesc,
+  //   imageUrl:updatedImageurl });
+  
+    Product.findById(productid).then(product=>{
+      product.title=updatedtitle;
+        product. price=updatedprice;
+        product. description=updateddesc;
+        product. imageUrl=updatedImageurl;
+        return product.save()
+    })
   // product
   //   .findByPk(productid)
   //   .then((product) => {
@@ -155,7 +168,16 @@ exports.addproduct = (req, res, next) => {
   //   .catch((err) => {
   //     console.log(err);
   //   });
-  const product = new Product(title, price, description, imgURL,null , req.user._id );
+
+
+  // const product = new Product(title, price, description, imgURL,null , req.user._id );
+  const product = new Product ({
+    title:title,
+    price:price,
+    description:description,
+    imageUrl:imgURL,
+    userId:req.user._id
+  })
 
   product
     .save()
@@ -170,7 +192,6 @@ exports.addproduct = (req, res, next) => {
 
 exports.getprodetails = (req, res, next) => {
   const proid = req.params.productid;
-  console.log(proid);
   Product.findById (proid)
     // req.user.getProducts({where : {id:proid}})
     // Product.findAll({where : {id:proid}})
@@ -236,7 +257,7 @@ res.redirect('/cart');
 };
 
 exports.getpostproduct = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
@@ -267,7 +288,7 @@ exports.getpostproduct = (req, res, next) => {
 };
 
 exports.shopproduts = (req, res, next) => {
-Product.fetchAll().then(products => {
+Product.find().then(products => {
   res.render('shop/product-list',{
     prods:products,
     pageTitle: "Shop",
@@ -279,8 +300,9 @@ Product.fetchAll().then(products => {
 exports.shopcart = (req, res, next) => {
   // console.log(req.user.cart);
   req.user
-  .getCart()
-  .then(products => {
+  .populate('cart.items.productId')
+  .then(user => {
+    const products=user.cart.items;
     res.render('shop/cart', {
       path: '/cart',
       pageTitle: 'Your Cart',
@@ -309,7 +331,7 @@ exports.shopcart = (req, res, next) => {
   // });
 };
 exports.adminproduct = (req, res, next) => {
-  Product.fetchAll().then((products)=>{
+  Product.find().then((products)=>{
     res.render('admin/products', {
       prods: products,
       pageTitle: 'admin-products',
@@ -345,17 +367,36 @@ exports.deletecartitem = (req, res, next) => {
 };
 
 exports.postorder = (req, res, next) => {
-  let fetchedCart;
   req.user
-    .addOrder()
+  .populate('cart.items.productId')
+  .then(user => {
+    const products=user.cart.items.map(i=>{
+      return {quantity: i.quantity,product:{...i.productId._doc}};
+
+    });
+    const order = new Order({
+        user:{
+          name:req.user.name,
+          userId:req.user
+        },
+        products:products
+    });
+    return order.save();
+  })
     .then((result) => {
+      console.log(req.user);
+      return req.user.clearCart();
+    })
+    .then(()=>{
       res.redirect("/orders");
+
     })
     .catch((err) => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders().then((orders) => {
+  Order.find({'user.userId':req.user._id})
+.then((orders) => {
     console.log(orders);
     res.render("shop/orders", {
       path: "/orders",
