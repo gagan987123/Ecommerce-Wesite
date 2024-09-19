@@ -1,0 +1,8 @@
+{
+  "env": {
+    "MONGO_USER": "gagandeep",
+    "MONGO_PASSWORD": "Arora09++",
+    "MONGO_DEFAULT_DATABASE": "shopping",
+    "STRIP_KEY": "sk_test_51PwjnCRptKovWDKiJUkboRrdgkMJUeHKmTg3LWwXNADMSaXvye0Oo19m2MZ2XtyIbWBJysFK9M8cdswTQG0DpNf200Qk1tTUle"
+  }
+}

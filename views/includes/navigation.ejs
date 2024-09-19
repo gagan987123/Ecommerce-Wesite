@@ -1,7 +1,10 @@
 <div class="backdrop"></div>
 <header class="main-header">
     <button id="side-menu-toggle">Menu</button>
+    <h2 class="logo">SHOP</h2>
     <nav class="main-header__nav">
+        <h2 class="logo2">SHOP</h2>
+
         <ul class="main-header__item-list">
             <li class="main-header__item">
                 <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
@@ -84,7 +87,7 @@
                             <form action="/logout" method="post">
                                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-                                <button type="submit">Logout</button>
+                                <button class="btn" type="submit">Logout</button>
                             </form>
                         </li>
                         <% } %>

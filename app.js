@@ -1,4 +1,6 @@
 const path = require("path");
+const https = require("https");
+const fs = require("fs");
 const errorcontroller = require("./controller/error");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -8,7 +10,10 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const helmet = require("helmet");
 const multer = require("multer");
+const compression = require("compression");
+const morgan = require("morgan");
 // const sequelize = require("./util/database");
 // const Product = require("./modles/products");
 // const Cart = require('./modles/cart');
@@ -16,15 +21,24 @@ const multer = require("multer");
 // const Order = require('./modles/order');
 // const OrderItem = require('./modles/order-item');
 // const mongoConnect  = require('./util/database').mongoConnect;
-const MOnGODB_URI =
-  "mongodb+srv://gagandeep:Arora09++@cluster0.v1udusr.mongodb.net/shopping?retryWrites=true&w=majority&appName=Cluster0";
+const MOnGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.v1udusr.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority&appName=Cluster0`;
 const app = express();
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 const store = new MongoDBStore({
   uri: MOnGODB_URI,
   collection: "sessions",
 });
 
 const csrfProtection = csrf();
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 // const fileStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     cb(null, "images");
@@ -116,6 +130,7 @@ app.use(errorcontroller.get404error);
 app.use((error, req, res, next) => {
   // res.redirect("/500");
   res.status(500).render("500", {
+    error: error,
     pageTitle: "Error ",
     path: "/500",
     isAuthenticated: req.session.isLoggedIn,
@@ -175,7 +190,9 @@ mongoose
 
     //     }
     // })
-    app.listen(3000);
+    https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(process.env.PORT || 3000);
     console.log("connected");
   })
   .catch((err) => {

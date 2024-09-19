@@ -1,46 +1,108 @@
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     </head>
 
     <body>
         <%- include('../includes/navigation.ejs') %>
 
             <main>
+                <section class="slideshow">
 
-                <% if (prods.length > 0) { %>
-                    <div class="grid">
-                        <% for (let product of prods) { %>
-                            <article class="card product-item">
-                                <header class="card__header">
-                                    <h1 class="product__title">
-                                        <%= product.title %>
-                                    </h1>
-                                </header>
-                                <div class="card__image">
-                                    <img src="/<%= product.imageUrl %>" alt="<%= product.title %>">
-                                </div>
-                                <div class="card__content">
-                                    <h2 class="product__price">$
-                                        <%= product.price %>
-                                    </h2>
-                                    <p class="product__description">
-                                        <%= product.description %>
-                                    </p>
-                                </div>
-                                <div class="card__actions">
-                                    <a href="/products/<%= product._id %>" class="btn">Details</a>
-                                    <% if(isAuthenticated) { %>
-                                        <%- include('../includes/add-to-cart.ejs', {product: product}) %>
-                                            <% } %>
-                                </div>
 
-                            </article>
-                            <% } %>
+
+                    <!--Slider-->
+                    <div id="slider">
+                        <div class="slide" style="background:dodgerBlue;">
+                            <img src="/images/D103625178_DesktopTallHero_3000x1200_V3._CB558389732_.jpg">
+                        </div>
+
+                        <div class="slide" style="background:coral;">
+                            <img src="/images/GW-Hero-PC_BBAug23_Soft-toys_with-Apay_Lifestyle_2x._CB597740150_.jpg">
+                        </div>
+
+                        <div class="slide" style="background:crimson;">
+                            <img src="/images/Under1499_Tallhero_3000x1200._CB568928188_.jpg">
+                        </div>
+
+                        <!-- <div class="slide" style="background: #6edf10;">
+                            <img src="https://dmasia.travel/wp-content/uploads/2019/09/vit3-1000x350.jpg">
+                        </div> -->
+
+                        <!--Controlling arrows-->
+                        <span class="controls" onclick="prevSlide(-1)" id="left-arrow"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+</span>
+                        <span class="controls" id="right-arrow" onclick="nextSlide(1)"><i class="fa fa-arrow-right" aria-hidden="true"></i>
+</span>
                     </div>
-                    <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage, previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage: hasPreviousPage}) %>
+                    <div id="dots-con">
+                        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    </div>
+                </section>
+                <section class="sec">
+                    <div class="custom-card">
+                        <img src="https://via.placeholder.com/60x70" alt="Image 4">
 
-                        <% } else { %>
-                            <h1>No Products Found!</h1>
-                            <% } %>
+                        <h3>Card Title 1</h3>
+                        <button>Read More</button>
+                    </div>
+                    <div class="custom-card">
+                        <img src="https://via.placeholder.com/60x70" alt="Image 4">
+
+                        <h3>Card Title 2</h3>
+                        <button>Read More</button>
+                    </div>
+                    <div class="custom-card">
+                        <img src="https://via.placeholder.com/60x70" alt="Image 4">
+
+                        <h3>Card Title 3</h3>
+                        <button>Read More</button>
+                    </div>
+                    <div class="custom-card">
+                        <img src="https://via.placeholder.com/60x70" alt="Image 4">
+                        <h3>Card Title 4</h3>
+                        <button>Read More</button>
+                    </div>
+
+
+
+                </section>
+                <section class="pro">
+                    <% if (prods.length > 0) { %>
+                        <div class="grid">
+                            <% for (let product of prods) { %>
+                                <article class="card product-item">
+                                    <header class="card__header">
+                                        <h1 class="product__title">
+                                            <%= product.title %>
+                                        </h1>
+                                    </header>
+                                    <div class="card__image">
+                                        <img src="/<%= product.imageUrl %>" alt="<%= product.title %>">
+                                    </div>
+                                    <div class="card__content">
+                                        <h2 class="product__price">$
+                                            <%= product.price %>
+                                        </h2>
+                                        <p class="product__description">
+                                            <%= product.description %>
+                                        </p>
+                                    </div>
+                                    <div class="card__actions">
+                                        <a href="/products/<%= product._id %>" class="btn">Details</a>
+                                        <% if(isAuthenticated) { %>
+                                            <%- include('../includes/add-to-cart.ejs', {product: product}) %>
+                                                <% } %>
+                                    </div>
+
+                                </article>
+                                <% } %>
+                        </div>
+                        <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage, previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage: hasPreviousPage}) %>
+
+                            <% } else { %>
+                                <h1>No Products Found!</h1>
+                                <% } %>
+                </section>
             </main>
             <%- include('../includes/end.ejs') %>

@@ -8,10 +8,7 @@ router.get("/add-product", isAuth, productcontroller.getproduct);
 router.post(
   "/add-product",
   isAuth,
-  [
-    body("title").isAlphanumeric().isLength({ min: 3 }).trim(),
-    body("price").isFloat(),
-  ],
+  [body("title").isLength({ min: 3 }).trim(), body("price").isFloat()],
   productcontroller.addproduct
 );
 router.get("/products", isAuth, productcontroller.adminproduct);
@@ -30,7 +27,7 @@ router.post(
   ],
   productcontroller.posteditproduct
 );
-router.post(
+router.delete(
   "/delete-product/:productid",
   isAuth,
   productcontroller.deleteproduct

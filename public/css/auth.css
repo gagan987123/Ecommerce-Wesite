@@ -1,27 +1,68 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700");
 .login-form {
-    width: 20rem;
-    max-width: 90%;
-    margin: auto;
-    display: block;
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
 }
 
 .box {
-    height: 15rem;
+  height: 30rem;
+  width: fit-content;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
-/* main{
-    height: 80vh;
-    display: flex;
-    justify-content: center;
-    align-items:  center;
-  } */
+main {
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Open Sans", sans-serif;
+}
 
 .user-message {
-    margin: auto;
-    width: 50%;
-    border: 1px solid rgb(117, 117, 229);
-    background-color: rgb(160, 215, 215);
-    padding: 1rem;
-    border-radius: 2px;
+  margin: auto;
+  width: 50%;
+  border: 1px solid rgb(117, 117, 229);
+  background-color: rgb(160, 215, 215);
+  padding: 1rem;
+  border-radius: 2px;
+}
+
+.heading {
+  font-weight: 900;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-control {
+  margin: 1rem 0;
+}
+
+.form-control label,
+.form-control input,
+.form-control textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.form-control input,
+.form-control textarea {
+  border: 1px solid #a1a1a1;
+  font: inherit;
+  border-radius: 2px;
+}
+
+.form-control input:focus,
+.form-control textarea:focus {
+  outline-color: #00695c;
 }

@@ -14,8 +14,11 @@ const mysql = require("../util/database"); // Use mysql2 library for promises
 const XLSX = require("xlsx");
 const { validationResult } = require("express-validator");
 const { default: mongoose } = require("mongoose");
+const { ReturnDocument } = require("mongodb");
+
+const stripe = require("stripe")(process.env.STRIP_KEY);
 // const { ObjectId } = require("mongodb");
-const ITEM_PER_PAGE = 2;
+const ITEM_PER_PAGE = 4;
 const ITEM_PER_PAGE2 = 4;
 
 exports.getproduct = (req, res, next) => {
@@ -47,13 +50,16 @@ exports.deleteproduct = (req, res, next) => {
     })
     .then(() => {
       console.log("destroyed product");
-      res.redirect("/admin/products");
+      res.status(200).json({ message: "sccess" });
     })
     .catch((err) => {
       // res.redirect("/500");
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+
+      //   const error = new Error(err);
+      //   error.httpStatusCode = 500;
+      //   return next(error);
+
+      res.status(500).json({ message: "deleting failed" });
     });
 };
 
@@ -223,7 +229,7 @@ exports.addproduct = (req, res, next) => {
       hasError: true,
       product: {
         title: title,
-        imageUrl: imgURL,
+
         price: price,
         description: description,
       },
@@ -603,5 +609,55 @@ exports.getInvoice = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+    });
+};
+
+exports.getCheckout = (req, res, next) => {
+  let products;
+  let total = 0;
+
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      products = user.cart.items;
+      total = 0;
+      products.forEach((p) => {
+        total += p.quantity * p.productId.price;
+      });
+
+      return stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: products.map((p) => {
+          return {
+            quantity: p.quantity, // Ensuring correct quantity
+            price_data: {
+              currency: "INR",
+              unit_amount: p.productId.price * 100, // Stripe expects the price in the smallest currency unit (e.g., paise for INR)
+              product_data: {
+                name: p.productId.title,
+                description: p.productId.description,
+              },
+            },
+          };
+        }),
+        mode: "payment",
+        success_url:
+          req.protocol + "://" + req.get("host") + "/checkout/success",
+        cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancle",
+      });
+    })
+    .then((session) => {
+      res.render("shop/checkouting", {
+        path: "/shop/checkout",
+        pageTitle: "checkout",
+        products: products,
+        totalSum: total,
+        sessionId: session.id,
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
