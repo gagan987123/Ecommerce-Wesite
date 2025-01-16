@@ -116,11 +116,11 @@ img {
   }
 }
 
-/* .pro {
+.pro {
   position: absolute;
   z-index: 2;
   top: 45%;
-} */
+}
 
 .slideshow {
   z-index: 1;

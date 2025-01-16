@@ -16,7 +16,9 @@ const { validationResult } = require("express-validator");
 const { default: mongoose } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
 
-const stripe = require("stripe")(process.env.STRIP_KEY);
+const stripe = require("stripe")(
+  "sk_test_51PwjnCRptKovWDKiJUkboRrdgkMJUeHKmTg3LWwXNADMSaXvye0Oo19m2MZ2XtyIbWBJysFK9M8cdswTQG0DpNf200Qk1tTUle"
+);
 // const { ObjectId } = require("mongodb");
 const ITEM_PER_PAGE = 4;
 const ITEM_PER_PAGE2 = 4;
